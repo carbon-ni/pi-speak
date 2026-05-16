@@ -1,15 +1,8 @@
 import type { ContentResolver } from "../application/ports.js";
 import type { ReadableContent } from "../domain/readable-content.js";
+import { getReadableAssistantMessages, resolveReadableMessageRange, type PiSessionEntryLike } from "./pi-session-content.js";
 
-export interface SessionEntryLike {
-  type: string;
-  message?: {
-    role?: string;
-    content?: Array<{ type: string; text?: string }>;
-    timestamp?: number;
-  };
-  id?: string;
-}
+export type SessionEntryLike = PiSessionEntryLike;
 
 export interface SessionManagerLike {
   getBranch(): SessionEntryLike[];
@@ -26,7 +19,7 @@ export class PiContentResolver implements ContentResolver {
   ) {}
 
   async getLatestAssistantText(): Promise<ReadableContent | null> {
-    const messages = this.getReadableMessages();
+    const messages = getReadableAssistantMessages(this.sessionManager.getBranch());
     const latest = messages.at(-1);
     if (!latest) return null;
     return {
@@ -38,25 +31,7 @@ export class PiContentResolver implements ContentResolver {
   }
 
   async getMessageRange(startOffset: number, endOffset: number): Promise<ReadableContent | null> {
-    const messages = this.getReadableMessages();
-    if (messages.length === 0) return null;
-
-    const startIndex = this.resolveOffset(messages.length, startOffset);
-    const endIndex = this.resolveOffset(messages.length, endOffset);
-    if (startIndex === null || endIndex === null) return null;
-
-    const from = Math.min(startIndex, endIndex);
-    const to = Math.max(startIndex, endIndex);
-    const selected = messages.slice(from, to + 1);
-    if (selected.length === 0) return null;
-
-    return {
-      sourceId: `${selected[0].id}..${selected[selected.length - 1].id}`,
-      sourceType: "message",
-      title: `range ${startOffset} ${endOffset}`,
-      text: selected.map((message) => message.text).join("\n\n"),
-      createdAt: selected[0].createdAt,
-    };
+    return resolveReadableMessageRange(getReadableAssistantMessages(this.sessionManager.getBranch()), startOffset, endOffset);
   }
 
   async getSelectedText(): Promise<ReadableContent | null> {
@@ -69,33 +44,4 @@ export class PiContentResolver implements ContentResolver {
       createdAt: Date.now(),
     };
   }
-
-  private getReadableMessages(): Array<{ id: string; text: string; createdAt: number }> {
-    return this.sessionManager
-      .getBranch()
-      .flatMap((entry, index) => {
-        if (entry.type !== "message") return [];
-        const role = entry.message?.role;
-        if (role !== "assistant") return [];
-        const text = (entry.message?.content || [])
-          .filter((part) => part.type === "text" && part.text)
-          .map((part) => part.text)
-          .join("\n")
-          .trim();
-        if (!text) return [];
-        return [{
-          id: entry.id ?? `${role}-${index}`,
-          text,
-          createdAt: entry.message?.timestamp ?? Date.now(),
-        }];
-      });
-  }
-
-  private resolveOffset(length: number, offset: number): number | null {
-    if (offset > 0) return null;
-    const index = length - 1 + offset;
-    if (index >= length) return null;
-    return Math.max(0, index);
-  }
 }
-

@@ -7,6 +7,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint": "npm run typecheck",
+    "all": "npm run lint && npm test",
     "pi-speak": "node ./bin/pi-speak.mjs"
   },
   "peerDependencies": {

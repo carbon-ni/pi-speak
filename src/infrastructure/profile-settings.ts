@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { loadReadOutLoudConfig } from "./read-out-loud-config.js";
 
 type SettingsFile = Record<string, unknown> & {
-  pisay?: Record<string, unknown>;
+  "pi-speak"?: Record<string, unknown>;
   // backwards compatible
   readOutLoud?: Record<string, unknown>;
 };
@@ -32,10 +32,10 @@ export async function setReadOutLoudProfile(options: {
 
   const existing = await readSettings(targetPath);
   const created = existing == null;
-  const prev = (existing?.pisay as any) ?? (existing?.readOutLoud as any) ?? {};
+  const prev = (existing?.["pi-speak"] as any) ?? (existing?.readOutLoud as any) ?? {};
   const next: SettingsFile = {
     ...(existing ?? {}),
-    pisay: {
+    "pi-speak": {
       ...prev,
       profile: options.profile
     }
@@ -59,12 +59,12 @@ export async function createReadOutLoudProfile(options: {
   const existing = await readSettings(targetPath);
   const created = existing == null;
 
-  const prev = (existing?.pisay as any) ?? (existing?.readOutLoud as any) ?? {};
+  const prev = (existing?.["pi-speak"] as any) ?? (existing?.readOutLoud as any) ?? {};
   const currentProfiles = (prev.profiles ?? {}) as Record<string, unknown>;
 
   const next: SettingsFile = {
     ...(existing ?? {}),
-    pisay: {
+    "pi-speak": {
       ...prev,
       profiles: {
         ...currentProfiles,

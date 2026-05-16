@@ -23,7 +23,7 @@ export class BundledPiperSpeechEngine implements SpeechEngine {
   }
 
   async stop(): Promise<void> {
-    await this.exec("pkill", ["-f", "(afplay|pw-play|paplay|aplay) .*pisay-piper"]);
+    await this.exec("pkill", ["-f", "(afplay|pw-play|paplay|aplay) .*pi-speak-piper"]);
     await this.exec("pkill", ["-x", "piper"]);
   }
 
@@ -42,7 +42,7 @@ export class BundledPiperSpeechEngine implements SpeechEngine {
     const lengthScale = (1 / this.voice.speakingRate).toFixed(6);
     return [
       "set -euo pipefail",
-      'tmp="$(mktemp -t pisay-piper.XXXXXX).wav"',
+      'tmp="$(mktemp -t pi-speak-piper.XXXXXX).wav"',
       `printf %s ${shellQuote(encoded)} | base64 --decode | piper --model ${modelPath} --config ${configPath} --length_scale ${lengthScale} --output_file \"$tmp\"`,
       'player="$(command -v afplay || command -v pw-play || command -v paplay || command -v aplay)"',
       'nohup "$player" "$tmp" >/dev/null 2>&1 &'

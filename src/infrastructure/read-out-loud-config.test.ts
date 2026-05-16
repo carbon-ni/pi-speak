@@ -5,10 +5,10 @@ import { describe, expect, it } from "vitest";
 import { loadReadOutLoudConfig } from "./read-out-loud-config.js";
 
 describe("loadReadOutLoudConfig", () => {
-  it("loads pisay config from global settings.json", async () => {
+  it("loads pi-speak config from global settings.json", async () => {
     const home = await makeHome();
     await writeJson(join(home, ".pi", "agent", "settings.json"), {
-      pisay: {
+      "pi-speak": {
         piper: {
           modelPath: "/custom/amy.onnx",
           configPath: "/custom/amy.onnx.json",
@@ -34,7 +34,7 @@ describe("loadReadOutLoudConfig", () => {
     const home = await makeHome();
     const projectDir = join(home, "workspace", "demo");
     await writeJson(join(projectDir, ".pi", "settings.json"), {
-      pisay: {
+      "pi-speak": {
         speech: {
           autoSpeak: true
         }
@@ -50,7 +50,7 @@ describe("loadReadOutLoudConfig", () => {
     const home = await makeHome();
     const projectDir = join(home, "workspace", "demo");
     await writeJson(join(home, ".pi", "agent", "settings.json"), {
-      pisay: {
+      "pi-speak": {
         speech: {
           autoSpeak: false,
           pathMode: "read"
@@ -58,7 +58,7 @@ describe("loadReadOutLoudConfig", () => {
       }
     });
     await writeJson(join(projectDir, ".pi", "settings.json"), {
-      pisay: {
+      "pi-speak": {
         speech: {
           autoSpeak: true
         }
@@ -74,7 +74,7 @@ describe("loadReadOutLoudConfig", () => {
     const home = await makeHome();
     const agentDir = join(home, "custom-agent-dir");
     await writeJson(join(agentDir, "settings.json"), {
-      pisay: {
+      "pi-speak": {
         speech: {
           autoSpeak: true
         }
@@ -109,7 +109,7 @@ describe("loadReadOutLoudConfig", () => {
   it("rejects partial piper config", async () => {
     const home = await makeHome();
     await writeJson(join(home, ".pi", "agent", "settings.json"), {
-      pisay: {
+      "pi-speak": {
         piper: {
           modelPath: "/custom/amy.onnx"
         }
@@ -117,14 +117,14 @@ describe("loadReadOutLoudConfig", () => {
     });
 
     await expect(loadReadOutLoudConfig({ homeDir: home, projectDir: join(home, "workspace", "empty") })).rejects.toThrow(
-      "Invalid pisay config: piper.modelPath and piper.configPath are both required"
+      "Invalid pi-speak config: piper.modelPath and piper.configPath are both required"
     );
   });
 
   it("rejects invalid path mode", async () => {
     const home = await makeHome();
     await writeJson(join(home, ".pi", "agent", "settings.json"), {
-      pisay: {
+      "pi-speak": {
         speech: {
           pathMode: "verbose"
         }
@@ -132,14 +132,14 @@ describe("loadReadOutLoudConfig", () => {
     });
 
     await expect(loadReadOutLoudConfig({ homeDir: home, projectDir: join(home, "workspace", "empty") })).rejects.toThrow(
-      "Invalid pisay config: speech.pathMode must be 'ignore' or 'read'"
+      "Invalid pi-speak config: speech.pathMode must be 'ignore' or 'read'"
     );
   });
 
   it("rejects non-boolean auto speak", async () => {
     const home = await makeHome();
     await writeJson(join(home, ".pi", "agent", "settings.json"), {
-      pisay: {
+      "pi-speak": {
         speech: {
           autoSpeak: "yes"
         }
@@ -147,14 +147,14 @@ describe("loadReadOutLoudConfig", () => {
     });
 
     await expect(loadReadOutLoudConfig({ homeDir: home, projectDir: join(home, "workspace", "empty") })).rejects.toThrow(
-      "Invalid pisay config: speech.autoSpeak must be true or false"
+      "Invalid pi-speak config: speech.autoSpeak must be true or false"
     );
   });
 
   it("rejects non-positive speaking rate", async () => {
     const home = await makeHome();
     await writeJson(join(home, ".pi", "agent", "settings.json"), {
-      pisay: {
+      "pi-speak": {
         piper: {
           modelPath: "/custom/amy.onnx",
           configPath: "/custom/amy.onnx.json",
@@ -164,14 +164,14 @@ describe("loadReadOutLoudConfig", () => {
     });
 
     await expect(loadReadOutLoudConfig({ homeDir: home, projectDir: join(home, "workspace", "empty") })).rejects.toThrow(
-      "Invalid pisay config: piper.speakingRate must be greater than 0"
+      "Invalid pi-speak config: piper.speakingRate must be greater than 0"
     );
   });
 
   it("supports profiles and selects active profile piper config", async () => {
     const home = await makeHome();
     await writeJson(join(home, ".pi", "agent", "settings.json"), {
-      pisay: {
+      "pi-speak": {
         profile: "kareem",
         profiles: {
           kareem: {
@@ -185,8 +185,8 @@ describe("loadReadOutLoudConfig", () => {
     const config = await loadReadOutLoudConfig({ homeDir: home, projectDir: join(home, "workspace", "empty") });
 
     expect(config.profile).toBe("kareem");
-    expect(config.piper.modelPath).toBe(`${home}/.pi/agent/cache/pisay/piper/voices/ar_JO-kareem-low/model.onnx`);
-    expect(config.piper.configPath).toBe(`${home}/.pi/agent/cache/pisay/piper/voices/ar_JO-kareem-low/model.onnx.json`);
+    expect(config.piper.modelPath).toBe(`${home}/.pi/agent/cache/pi-speak/piper/voices/ar_JO-kareem-low/model.onnx`);
+    expect(config.piper.configPath).toBe(`${home}/.pi/agent/cache/pi-speak/piper/voices/ar_JO-kareem-low/model.onnx.json`);
     expect(config.piper.speakingRate).toBe(1.4);
   });
 });
@@ -197,6 +197,6 @@ async function writeJson(path: string, data: unknown): Promise<void> {
 }
 
 async function makeHome(): Promise<string> {
-  const dir = await import("node:fs/promises").then(({ mkdtemp }) => mkdtemp(join(tmpdir(), "pisay-home-")));
+  const dir = await import("node:fs/promises").then(({ mkdtemp }) => mkdtemp(join(tmpdir(), "pi-speak-home-")));
   return dir;
 }

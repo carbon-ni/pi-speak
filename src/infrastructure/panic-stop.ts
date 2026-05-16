@@ -9,7 +9,7 @@ import type { ExecLike } from "./system-speech-engine.js";
  */
 export async function panicStop(exec: ExecLike = defaultExec): Promise<void> {
   // Kill playback first so sound stops ASAP.
-  await exec("pkill", ["-f", "afplay .*pisay-piper"]);
+  await exec("pkill", ["-f", "afplay .*pi-speak-piper"]);
   // backwards compatibility
   await exec("pkill", ["-f", "afplay .*read-out-loud-piper"]);
 

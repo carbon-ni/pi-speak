@@ -28,7 +28,7 @@ describe("BundledPiperSpeechEngine", () => {
     expect(calls[2].args[1]).toContain("/repo/voices/en_US-amy-medium.onnx.json");
     expect(calls[2].args[1]).toContain("aGVsbG8gd29ybGQ=");
     expect(calls[2].args[1]).toContain("piper");
-    expect(calls[2].args[1]).toContain("mktemp -t pisay-piper.XXXXXX");
+    expect(calls[2].args[1]).toContain("mktemp -t pi-speak-piper.XXXXXX");
     expect(calls[2].args[1]).toContain(".wav");
     expect(calls[2].args[1]).toContain("--length_scale 0.869565");
     expect(calls[2].args[1]).toContain("player=\"$(command -v afplay || command -v pw-play || command -v paplay || command -v aplay)\"");
@@ -46,7 +46,7 @@ describe("BundledPiperSpeechEngine", () => {
     await engine.stop();
 
     expect(calls).toEqual([
-      { command: "pkill", args: ["-f", "(afplay|pw-play|paplay|aplay) .*pisay-piper"] },
+      { command: "pkill", args: ["-f", "(afplay|pw-play|paplay|aplay) .*pi-speak-piper"] },
       { command: "pkill", args: ["-x", "piper"] }
     ]);
   });

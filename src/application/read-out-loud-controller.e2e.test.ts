@@ -13,7 +13,7 @@ const configPath = new URL("../../voices/en_US-amy-medium.onnx.json", import.met
 const latest: ReadableContent = {
   sourceId: "assistant-e2e",
   sourceType: "latest",
-  text: "hello from pisay end to end test. ".repeat(20),
+  text: "hello from pi-speak end to end test. ".repeat(20),
   createdAt: 1
 };
 
@@ -69,7 +69,7 @@ describe("ReadOutLoudController e2e", () => {
     await controller.playLatest();
     await sleep(500);
 
-    const active = await pgrep("(afplay|pw-play|paplay|aplay) .*pisay-piper");
+    const active = await pgrep("(afplay|pw-play|paplay|aplay) .*pi-speak-piper");
 
     expect(statuses).toEqual(["idle", "loading", "playing"]);
     expect(controller.getState().type).toBe("playing");
@@ -78,7 +78,7 @@ describe("ReadOutLoudController e2e", () => {
     await controller.stop();
     await sleep(200);
 
-    const afterStop = await pgrep("(afplay|pw-play|paplay|aplay) .*pisay-piper");
+    const afterStop = await pgrep("(afplay|pw-play|paplay|aplay) .*pi-speak-piper");
     expect(afterStop).toBe("");
     expect(controller.getState()).toEqual({ type: "idle" });
   }, 15000);

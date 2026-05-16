@@ -56,10 +56,10 @@ but on disk the payload is stored as numbered blobs.
 ## Example config
 
 User-local config file:
-- `~/.pi/agent/pisay.json`
+- `~/.pi/agent/pi-speak.json`
 
 Example repo file:
-- `pi/agent/extensions/pisay/pisay.example.json`
+- `pi/agent/extensions/pi-speak/pi-speak.example.json`
 
 Example:
 

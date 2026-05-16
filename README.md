@@ -1,4 +1,4 @@
-# pisay
+# pi-speak
 
 Pi extension + CLI that reads assistant messages aloud with local Piper TTS.
 
@@ -18,7 +18,7 @@ Supported commands:
 - `speak enable` — re-enable speaking for current session after `silence`
 - `speak disable` — disable speaking for current session
 - `speak auto` — toggle auto speak for assistant messages as they finish
-- `speak init` — scaffold `.pi/settings.json` with `pisay` defaults for current project
+- `speak init` — scaffold `.pi/settings.json` with `pi-speak` defaults for current project
 - `speak voices` — list catalog voices
 - `speak voices installed` — list installed voices
 - `speak voices install <voice-id>` — install a voice into local cache
@@ -31,7 +31,7 @@ Flow:
 2. `src/domain/command-parser.ts` parses command args
 3. `src/infrastructure/pi-content-resolver.ts` resolves latest message, range, or selection
 4. `src/domain/text-normalizer.ts` removes markdown noise
-5. `src/application/read-out-loud-controller.ts` manages playback state (internal name; config key is `pisay`)
+5. `src/application/read-out-loud-controller.ts` manages playback state (internal name; config key is `pi-speak`)
 6. `src/infrastructure/piper-speech-engine.ts` runs `piper` and `afplay`
 7. `src/infrastructure/pi-status-presenter.ts` updates Pi UI status
 
@@ -82,7 +82,7 @@ Example:
 
 ```json
 {
-  "pisay": {
+  "pi-speak": {
     "piper": {
       "modelPath": "/absolute/path/to/model.onnx",
       "configPath": "/absolute/path/to/model.onnx.json",
@@ -98,7 +98,7 @@ Example:
 
 Rules:
 - project settings override global settings
-- nested `pisay` keys merge like normal Pi settings (legacy `readOutLoud` is still read for backwards compatibility)
+- nested `pi-speak` keys merge like normal Pi settings (legacy `readOutLoud` is still read for backwards compatibility)
 - if no config file is found, bundled voice is used
 - `piper.modelPath` and `piper.configPath` are both required when `piper` is set
 - `piper.speakingRate` must be greater than `0`
@@ -111,7 +111,7 @@ Rules:
 
 Installed voices are stored under:
 
-`~/.pi/agent/cache/pisay/piper/voices/<voice-id>/`
+`~/.pi/agent/cache/pi-speak/piper/voices/<voice-id>/`
 
 Files:
 - `model.onnx`
@@ -146,7 +146,7 @@ npm test
 - `speech.pathMode: "ignore"` removes file paths from spoken text
 - `speech.pathMode: "read"` keeps file paths in spoken text
 - `speech.autoSpeak: true` enables auto speak for that project/session path on startup
-- `speak init` writes missing `pisay` defaults into `<project>/.pi/settings.json`
+- `speak init` writes missing `pi-speak` defaults into `<project>/.pi/settings.json`
 - `speak auto` toggles automatic reading of assistant messages as they arrive
 - auto-speak uses a unique FIFO queue and stops on next user message
 - `speak selection` first tries Pi/runtime selection hooks, then falls back to clipboard text

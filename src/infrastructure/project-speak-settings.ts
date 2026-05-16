@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 type SettingsFile = Record<string, unknown> & {
   // new namespace
-  pisay?: {
+  "pi-speak"?: {
     speech?: {
       autoSpeak?: boolean;
       pathMode?: "ignore" | "read";
@@ -23,10 +23,10 @@ export async function initProjectSpeakSettings(options?: { projectDir?: string }
   const path = join(projectDir, ".pi", "settings.json");
   const existing = await readSettings(path);
   const created = existing == null;
-  const prev = existing?.pisay ?? existing?.readOutLoud;
+  const prev = existing?.["pi-speak"] ?? existing?.readOutLoud;
   const next: SettingsFile = {
     ...(existing ?? {}),
-    pisay: {
+    "pi-speak": {
       ...(prev ?? {}),
       speech: {
         autoSpeak: prev?.speech?.autoSpeak ?? false,

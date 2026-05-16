@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { initProjectSpeakSettings } from "./project-speak-settings.js";
 
 describe("initProjectSpeakSettings", () => {
-  it("creates .pi/settings.json with pisay defaults", async () => {
+  it("creates .pi/settings.json with pi-speak defaults", async () => {
     const projectDir = await mkdtemp(join(tmpdir(), "read-out-loud-project-"));
 
     const result = await initProjectSpeakSettings({ projectDir });
@@ -13,7 +13,7 @@ describe("initProjectSpeakSettings", () => {
 
     expect(result.created).toBe(true);
     expect(saved).toEqual({
-      pisay: {
+      "pi-speak": {
         speech: {
           autoSpeak: false,
           pathMode: "ignore"
@@ -22,7 +22,7 @@ describe("initProjectSpeakSettings", () => {
     });
   });
 
-  it("preserves existing settings and adds pisay defaults", async () => {
+  it("preserves existing settings and adds pi-speak defaults", async () => {
     const projectDir = await mkdtemp(join(tmpdir(), "read-out-loud-project-"));
     await initProjectSettings(projectDir, {
       theme: "dark"
@@ -34,7 +34,7 @@ describe("initProjectSpeakSettings", () => {
     expect(result.created).toBe(false);
     expect(saved).toEqual({
       theme: "dark",
-      pisay: {
+      "pi-speak": {
         speech: {
           autoSpeak: false,
           pathMode: "ignore"
@@ -43,7 +43,7 @@ describe("initProjectSpeakSettings", () => {
     });
   });
 
-  it("migrates legacy readOutLoud settings into pisay without overriding", async () => {
+  it("migrates legacy readOutLoud settings into pi-speak without overriding", async () => {
     const projectDir = await mkdtemp(join(tmpdir(), "read-out-loud-project-"));
     await initProjectSettings(projectDir, {
       readOutLoud: {
@@ -64,7 +64,7 @@ describe("initProjectSpeakSettings", () => {
           pathMode: "read"
         }
       },
-      pisay: {
+      "pi-speak": {
         speech: {
           autoSpeak: true,
           pathMode: "read"

@@ -32,7 +32,7 @@ describe("profile-settings", () => {
     expect(result.profile).toBe("kareem");
 
     const saved = JSON.parse(await readFile(join(cwd, ".pi", "settings.json"), "utf8"));
-    expect(saved.pisay.profile).toBe("kareem");
+    expect(saved["pi-speak"].profile).toBe("kareem");
   });
 
   it("sets global profile into ~/.pi/agent/settings.json", async () => {
@@ -45,7 +45,7 @@ describe("profile-settings", () => {
     expect(result.path).toBe(join(home, ".pi", "agent", "settings.json"));
 
     const saved = JSON.parse(await readFile(join(home, ".pi", "agent", "settings.json"), "utf8"));
-    expect(saved.pisay.profile).toBe("amy");
+    expect(saved["pi-speak"].profile).toBe("amy");
   });
 
   it("preserves existing keys when setting profile", async () => {
@@ -60,8 +60,8 @@ describe("profile-settings", () => {
     // legacy preserved
     expect(saved.readOutLoud.speech.autoSpeak).toBe(true);
     // new namespace written
-    expect(saved.pisay.speech.autoSpeak).toBe(true);
-    expect(saved.pisay.profile).toBe("kareem");
+    expect(saved["pi-speak"].speech.autoSpeak).toBe(true);
+    expect(saved["pi-speak"].profile).toBe("kareem");
   });
 
   it("creates a profile scaffold in global settings", async () => {
@@ -73,6 +73,6 @@ describe("profile-settings", () => {
     expect(result.name).toBe("foobar");
 
     const saved = JSON.parse(await readFile(join(home, ".pi", "agent", "settings.json"), "utf8"));
-    expect(saved.pisay.profiles.foobar).toEqual({ speakingRate: 1.15 });
+    expect(saved["pi-speak"].profiles.foobar).toEqual({ speakingRate: 1.15 });
   });
 });

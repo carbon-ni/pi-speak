@@ -270,13 +270,13 @@ type ExtensionConfig = {
 ### Extension packaging and discovery
 This feature will integrate as a normal pi TypeScript extension.
 Preferred placement for hot reload:
-1. project-local `.pi/extensions/pisay/`
-2. global `~/.pi/agent/extensions/pisay/`
+1. project-local `.pi/extensions/pi-speak/`
+2. global `~/.pi/agent/extensions/pi-speak/`
 
 Package-style manifest:
 ```json
 {
-  "name": "pisay",
+  "name": "pi-speak",
   "type": "module",
   "pi": {
     "extensions": ["./src/index.ts"]
@@ -344,7 +344,7 @@ The extension must ignore:
 Use lightweight pi UI primitives first.
 
 MVP UI:
-- `ctx.ui.setStatus("pisay", "...")` for playback state
+- `ctx.ui.setStatus("pi-speak", "...")` for playback state
 - `ctx.ui.notify(...)` for errors and user feedback
 
 Optional later UI:
@@ -364,7 +364,7 @@ Rules:
 
 ### Persistence integration
 Persist user preferences and minimal playback metadata via extension state.
-Use `pi.appendEntry("pisay-state", data)` for durable, branch-aware restoration where needed.
+Use `pi.appendEntry("pi-speak-state", data)` for durable, branch-aware restoration where needed.
 
 Persist:
 - chosen engine
@@ -385,8 +385,8 @@ Reason: speech output is user-facing side effect, so explicit user commands are 
 
 ## Config
 Pi-style lookup:
-1. project-local `.pi/pisay.json`
-2. global `~/.pi/agent/pisay.json`
+1. project-local `.pi/pi-speak.json`
+2. global `~/.pi/agent/pi-speak.json`
 
 Example:
 ```json
@@ -510,7 +510,7 @@ TDD first.
 Preferred runtime location for actual pi integration:
 
 ```text
-.pi/extensions/pisay/
+.pi/extensions/pi-speak/
   SYSTEM_DESIGN_DOC.md
   README.md
   package.json
@@ -537,7 +537,7 @@ Preferred runtime location for actual pi integration:
 If this repository exposes extensions as a package, the same extension can also live under:
 
 ```text
-pi/agent/extensions/pisay/
+pi/agent/extensions/pi-speak/
 ```
 
 with `package.json` declaring:

@@ -10,7 +10,7 @@ export class PiStatusPresenter implements StatusPresenter {
   constructor(private readonly ui: PiUiLike) {}
 
   showState(state: PlaybackState): void {
-    this.ui.setStatus("pisay", this.format(state));
+    this.ui.setStatus("pi-speak", this.format(state));
   }
 
   notifyError(message: string): void {

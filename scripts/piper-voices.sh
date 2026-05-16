@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CATALOG="$ROOT_DIR/resources/piper-voices.json"
-CACHE_DIR="${HOME}/.pi/agent/cache/pisay/piper/voices"
+CACHE_DIR="${HOME}/.pi/agent/cache/pi-speak/piper/voices"
 
 mkdir -p "$CACHE_DIR"
 

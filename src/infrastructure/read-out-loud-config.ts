@@ -34,7 +34,7 @@ type RawConfig = {
 
 type SettingsFile = {
   // new namespace
-  pisay?: RawConfig;
+  "pi-speak"?: RawConfig;
   // backwards compatible namespace
   readOutLoud?: RawConfig;
 };
@@ -68,15 +68,15 @@ export async function loadReadOutLoudConfig(options?: {
   for (const path of paths) {
     const parsed = await readConfigFile(path);
 
-    // Merge legacy first, then new namespace so `pisay` wins when both exist.
+    // Merge legacy first, then new namespace so `pi-speak` wins when both exist.
     if (parsed?.readOutLoud) merged = mergeConfig(merged, parsed.readOutLoud);
-    if (parsed?.pisay) merged = mergeConfig(merged, parsed.pisay);
+    if (parsed?.["pi-speak"]) merged = mergeConfig(merged, parsed["pi-speak"]);
   }
 
   validateConfig(merged);
 
   const homeDir = options?.homeDir ?? homedir();
-  const cacheDir = join(homeDir, ".pi", "agent", "cache", "pisay", "piper", "voices");
+  const cacheDir = join(homeDir, ".pi", "agent", "cache", "pi-speak", "piper", "voices");
 
   const profiles = merged.profiles ?? {};
   const selectedProfile = merged.profile ?? merged.activeProfile;
@@ -127,32 +127,32 @@ function mergeConfig(base: RawConfig, override: RawConfig): RawConfig {
 
 function validateConfig(config: RawConfig): void {
   if (config.speech?.pathMode != null && config.speech.pathMode !== "ignore" && config.speech.pathMode !== "read") {
-    throw new Error("Invalid pisay config: speech.pathMode must be 'ignore' or 'read'");
+    throw new Error("Invalid pi-speak config: speech.pathMode must be 'ignore' or 'read'");
   }
   if (config.speech?.autoSpeak != null && typeof config.speech.autoSpeak !== "boolean") {
-    throw new Error("Invalid pisay config: speech.autoSpeak must be true or false");
+    throw new Error("Invalid pi-speak config: speech.autoSpeak must be true or false");
   }
   if (config.piper && (!config.piper.modelPath || !config.piper.configPath)) {
-    throw new Error("Invalid pisay config: piper.modelPath and piper.configPath are both required");
+    throw new Error("Invalid pi-speak config: piper.modelPath and piper.configPath are both required");
   }
   if (config.piper?.speakingRate != null && config.piper.speakingRate <= 0) {
-    throw new Error("Invalid pisay config: piper.speakingRate must be greater than 0");
+    throw new Error("Invalid pi-speak config: piper.speakingRate must be greater than 0");
   }
 
   const selectedProfile = config.profile ?? config.activeProfile;
   if (selectedProfile != null && (!config.profiles || !config.profiles[selectedProfile])) {
-    throw new Error("Invalid pisay config: profile must refer to an existing profile");
+    throw new Error("Invalid pi-speak config: profile must refer to an existing profile");
   }
 
   if (config.profiles) {
     for (const [key, profile] of Object.entries(config.profiles)) {
-      if (!key.trim()) throw new Error("Invalid pisay config: profile key must be non-empty");
+      if (!key.trim()) throw new Error("Invalid pi-speak config: profile key must be non-empty");
       if (profile.speakingRate != null && profile.speakingRate <= 0) {
-        throw new Error("Invalid pisay config: profile.speakingRate must be greater than 0");
+        throw new Error("Invalid pi-speak config: profile.speakingRate must be greater than 0");
       }
       const hasPaths = Boolean(profile.modelPath || profile.configPath);
       if (hasPaths && (!profile.modelPath || !profile.configPath)) {
-        throw new Error("Invalid pisay config: profile.modelPath and profile.configPath are both required when set");
+        throw new Error("Invalid pi-speak config: profile.modelPath and profile.configPath are both required when set");
       }
     }
   }

@@ -1,5 +1,5 @@
 {
-  "name": "pisay",
+  "name": "pi-speak",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -7,7 +7,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint": "npm run typecheck",
-    "pisay": "node ./bin/pisay.mjs"
+    "pi-speak": "node ./bin/pi-speak.mjs"
   },
   "peerDependencies": {
     "@mariozechner/pi-coding-agent": "*"
@@ -24,7 +24,7 @@
     "yargs": "^17.7.2"
   },
   "bin": {
-    "pisay": "./bin/pisay.mjs"
+    "pi-speak": "./bin/pi-speak.mjs"
   },
   "pi": {
     "extensions": [

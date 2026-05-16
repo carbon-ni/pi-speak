@@ -11,7 +11,7 @@ type Logger = {
   info(message: string): void;
 };
 
-type PisayArgs = {
+type PiSpeakArgs = {
   _: (string | number)[];
   voiceId?: string;
 };
@@ -19,16 +19,16 @@ type PisayArgs = {
 const defaultCacheDir = (): string => {
   const home = process.env.HOME;
   if (!home) throw new Error("HOME is not set");
-  return `${home}/.pi/agent/cache/pisay/piper/voices`;
+  return `${home}/.pi/agent/cache/pi-speak/piper/voices`;
 };
 
-export function createPisayCli(argv: string[] = []) {
+export function createPiSpeakCli(argv: string[] = []) {
   return yargs(argv)
-    .scriptName("pisay")
+    .scriptName("pi-speak")
     .exitProcess(false)
     .help(false)
     .version(false)
-    .command("init", "Scaffold local .pi/settings.json for pisay")
+    .command("init", "Scaffold local .pi/settings.json for pi-speak")
     .command("install [voiceId]", "Install a Piper voice into Pi cache", (cmd) => {
       return cmd
         .positional("voiceId", { type: "string" })
@@ -43,7 +43,7 @@ export function createPisayCli(argv: string[] = []) {
     );
 }
 
-export async function runPisay(
+export async function runPiSpeak(
   argv: string[],
   options?: {
     cwd?: string;
@@ -96,7 +96,7 @@ export async function runPisay(
 
   const panic = options?.panic ?? (async () => panicStop());
 
-  const parsed = (await createPisayCli(argv).parse()) as PisayArgs;
+  const parsed = (await createPiSpeakCli(argv).parse()) as PiSpeakArgs;
   const command = String(parsed._[0] ?? "");
 
   switch (command) {
@@ -114,14 +114,14 @@ export async function runPisay(
       }
 
       const voiceId = String(parsed.voiceId ?? parsed._[1] ?? "").trim();
-      if (!voiceId) throw new Error("Usage: pisay install <voiceId> OR pisay install --list");
+      if (!voiceId) throw new Error("Usage: pi-speak install <voiceId> OR pi-speak install --list");
       const result = await install(voiceId);
       logger.info(`Installed ${result.voiceId}`);
       return;
     }
     case "uninstall": {
       const voiceId = String(parsed.voiceId ?? parsed._[1] ?? "").trim();
-      if (!voiceId) throw new Error("Usage: pisay uninstall <voiceId>");
+      if (!voiceId) throw new Error("Usage: pi-speak uninstall <voiceId>");
       const result = await uninstall(voiceId);
       logger.info(`Uninstalled ${result.voiceId}`);
       return;
@@ -140,23 +140,23 @@ export async function runPisay(
       }
       if (sub === "set") {
         const profile = String((parsed as any).name ?? parsed._[2] ?? "").trim();
-        if (!profile) throw new Error("Usage: pisay profile set <name>");
+        if (!profile) throw new Error("Usage: pi-speak profile set <name>");
         const result = await setProfile({ scope: "project", profile, cwd });
         logger.info(`Set ${result.scope} profile to ${result.profile}`);
         return;
       }
       if (sub === "create") {
         const name = String((parsed as any).name ?? parsed._[2] ?? "").trim();
-        if (!name) throw new Error("Usage: pisay profile create <name>");
+        if (!name) throw new Error("Usage: pi-speak profile create <name>");
         const result = await createProfile({ scope: "global", name, cwd });
         logger.info(`Created ${result.scope} profile ${result.name}`);
         return;
       }
-      throw new Error("Usage: pisay profile list | pisay profile set <name> | pisay profile create <name>");
+      throw new Error("Usage: pi-speak profile list | pi-speak profile set <name> | pi-speak profile create <name>");
     }
     default:
       logger.info(
-        "pisay <command>\n\nCommands:\n  init                     Scaffold local .pi/settings.json for pisay\n  install <voiceId>        Install a Piper voice into Pi cache\n  install --list           List available voices\n  uninstall <voiceId>      Uninstall a Piper voice from Pi cache\n  panic                    Emergency stop: kill any ongoing speech playback\n  profile list             List configured pisay profiles\n  profile set <name>       Set project pisay profile\n  profile create <name>    Scaffold a global pisay profile"
+        "pi-speak <command>\n\nCommands:\n  init                     Scaffold local .pi/settings.json for pi-speak\n  install <voiceId>        Install a Piper voice into Pi cache\n  install --list           List available voices\n  uninstall <voiceId>      Uninstall a Piper voice from Pi cache\n  panic                    Emergency stop: kill any ongoing speech playback\n  profile list             List configured pi-speak profiles\n  profile set <name>       Set project pi-speak profile\n  profile create <name>    Scaffold a global pi-speak profile"
       );
       return;
   }
@@ -164,7 +164,7 @@ export async function runPisay(
 
 const isMain = process.argv[1] && import.meta.url === new URL(`file://${process.argv[1]}`).href;
 if (isMain) {
-  runPisay(hideBin(process.argv)).catch((error) => {
+  runPiSpeak(hideBin(process.argv)).catch((error) => {
     console.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;
   });

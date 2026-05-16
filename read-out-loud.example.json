@@ -1,0 +1,10 @@
+{
+  "piper": {
+    "modelPath": "/absolute/path/to/model.onnx",
+    "configPath": "/absolute/path/to/model.onnx.json",
+    "speakingRate": 1.15
+  },
+  "speech": {
+    "pathMode": "ignore"
+  }
+}

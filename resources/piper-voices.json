@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "voices": [
+    {
+      "id": "en_US-amy-medium",
+      "name": "Amy",
+      "lang": "en-US",
+      "quality": "medium",
+      "modelUrl": "https://example.invalid/piper/en_US-amy-medium.onnx",
+      "configUrl": "https://example.invalid/piper/en_US-amy-medium.onnx.json",
+      "modelSha256": "todo",
+      "configSha256": "todo"
+    },
+    {
+      "id": "en_GB-alan-medium",
+      "name": "Alan",
+      "lang": "en-GB",
+      "quality": "medium",
+      "modelUrl": "https://example.invalid/piper/en_GB-alan-medium.onnx",
+      "configUrl": "https://example.invalid/piper/en_GB-alan-medium.onnx.json",
+      "modelSha256": "todo",
+      "configSha256": "todo"
+    }
+  ]
+}

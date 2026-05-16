@@ -1,0 +1,34 @@
+{
+  "name": "pisay",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "npm run typecheck",
+    "pisay": "node ./bin/pisay.mjs"
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*"
+  },
+  "devDependencies": {
+    "@mariozechner/pi-coding-agent": "*",
+    "@types/node": "^22.15.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.1"
+  },
+  "dependencies": {
+    "@types/yargs": "^17.0.35",
+    "tsx": "^4.19.4",
+    "yargs": "^17.7.2"
+  },
+  "bin": {
+    "pisay": "./bin/pisay.mjs"
+  },
+  "pi": {
+    "extensions": [
+      "./src/index.ts"
+    ]
+  }
+}

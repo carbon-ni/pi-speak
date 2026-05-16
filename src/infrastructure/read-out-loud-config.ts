@@ -1,6 +1,6 @@
-import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { loadPiExtensionSettings } from "./pi-extension-settings.js";
 import type { PiperVoicePaths } from "./piper-speech-engine.js";
 
 export type ReadOutLoudConfig = {
@@ -32,13 +32,6 @@ type RawConfig = {
   activeProfile?: string;
 };
 
-type SettingsFile = {
-  // new namespace
-  "pi-speak"?: RawConfig;
-  // backwards compatible namespace
-  readOutLoud?: RawConfig;
-};
-
 export async function loadReadOutLoudConfig(options?: {
   homeDir?: string;
   agentDir?: string;
@@ -60,18 +53,12 @@ export async function loadReadOutLoudConfig(options?: {
     profile: undefined
   };
 
-  const projectDir = options?.projectDir ?? process.cwd();
-  const agentDir = options?.agentDir ?? process.env.PI_CODING_AGENT_DIR ?? join(options?.homeDir ?? homedir(), ".pi", "agent");
-  const paths = [join(agentDir, "settings.json"), join(projectDir, ".pi", "settings.json")];
-
-  let merged: RawConfig = {};
-  for (const path of paths) {
-    const parsed = await readConfigFile(path);
-
-    // Merge legacy first, then new namespace so `pi-speak` wins when both exist.
-    if (parsed?.readOutLoud) merged = mergeConfig(merged, parsed.readOutLoud);
-    if (parsed?.["pi-speak"]) merged = mergeConfig(merged, parsed["pi-speak"]);
-  }
+  const merged = await loadPiExtensionSettings<RawConfig>({
+    namespace: ["readOutLoud", "pi-speak"],
+    homeDir: options?.homeDir,
+    agentDir: options?.agentDir,
+    projectDir: options?.projectDir
+  });
 
   validateConfig(merged);
 
@@ -98,30 +85,6 @@ export async function loadReadOutLoudConfig(options?: {
     },
     profiles,
     profile: selectedProfile
-  };
-}
-
-async function readConfigFile(path: string): Promise<SettingsFile | null> {
-  try {
-    return JSON.parse(await readFile(path, "utf8")) as SettingsFile;
-  } catch (error) {
-    const code = (error as NodeJS.ErrnoException).code;
-    if (code === "ENOENT") return null;
-    throw error;
-  }
-}
-
-function mergeConfig(base: RawConfig, override: RawConfig): RawConfig {
-  const piper = { ...base.piper, ...override.piper };
-  const speech = { ...base.speech, ...override.speech };
-  const profiles = { ...(base.profiles ?? {}), ...(override.profiles ?? {}) };
-
-  return {
-    piper: Object.keys(piper).length > 0 ? piper : undefined,
-    speech: Object.keys(speech).length > 0 ? speech : undefined,
-    profiles: Object.keys(profiles).length > 0 ? profiles : undefined,
-    profile: override.profile ?? base.profile,
-    activeProfile: override.activeProfile ?? base.activeProfile
   };
 }
 

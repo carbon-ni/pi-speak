@@ -1,5 +1,4 @@
-import { spawn } from "node:child_process";
-import type { ExecLike } from "./system-speech-engine.js";
+import { createChildProcessExec, type ExecLike } from "./process-exec.js";
 
 /**
  * Panic button.
@@ -7,7 +6,7 @@ import type { ExecLike } from "./system-speech-engine.js";
  *
  * Intentionally blunt: used for emergency situations.
  */
-export async function panicStop(exec: ExecLike = defaultExec): Promise<void> {
+export async function panicStop(exec: ExecLike = createChildProcessExec()): Promise<void> {
   // Kill playback first so sound stops ASAP.
   await exec("pkill", ["-f", "afplay .*pi-speak-piper"]);
   // backwards compatibility
@@ -16,20 +15,4 @@ export async function panicStop(exec: ExecLike = defaultExec): Promise<void> {
   // Then kill engines.
   await exec("pkill", ["-x", "piper"]);
   await exec("pkill", ["-x", "say"]);
-}
-
-async function defaultExec(command: string, args: string[]): Promise<{ code: number; stdout: string; stderr: string }> {
-  return await new Promise((resolve) => {
-    const child = spawn(command, args, { stdio: ["ignore", "pipe", "pipe"] });
-    let stdout = "";
-    let stderr = "";
-    child.stdout.on("data", (chunk) => {
-      stdout += String(chunk);
-    });
-    child.stderr.on("data", (chunk) => {
-      stderr += String(chunk);
-    });
-    child.on("error", () => resolve({ code: 1, stdout: "", stderr: "" }));
-    child.on("close", (code) => resolve({ code: code ?? 1, stdout, stderr }));
-  });
 }

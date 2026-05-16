@@ -1,5 +1,5 @@
 import type { SpeechEngine } from "../application/ports.js";
-import type { ExecLike } from "./system-speech-engine.js";
+import { runChecked, type ExecLike } from "./process-exec.js";
 
 export type PiperVoicePaths = {
   modelPath: string;
@@ -16,10 +16,7 @@ export class BundledPiperSpeechEngine implements SpeechEngine {
   async speak(text: string): Promise<void> {
     await this.stop();
     const script = this.createSpeakScript(text);
-    const result = await this.exec("bash", ["-lc", script]);
-    if (result.code !== 0) {
-      throw new Error(result.stderr || "piper failed");
-    }
+    await runChecked(this.exec, "bash", ["-lc", script], "piper failed");
   }
 
   async stop(): Promise<void> {

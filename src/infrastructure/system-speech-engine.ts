@@ -1,7 +1,5 @@
 import type { SpeechEngine } from "../application/ports.js";
-
-export type ExecResult = { code: number; stdout: string; stderr: string };
-export type ExecLike = (command: string, args: string[]) => Promise<ExecResult>;
+import { runChecked, type ExecLike } from "./process-exec.js";
 
 export class MacOsSaySpeechEngine implements SpeechEngine {
   constructor(private readonly exec: ExecLike) {}
@@ -23,9 +21,6 @@ export class MacOsSaySpeechEngine implements SpeechEngine {
   }
 
   private async runSay(args: string[]): Promise<void> {
-    const result = await this.exec("say", args);
-    if (result.code !== 0) {
-      throw new Error(result.stderr || "say failed");
-    }
+    await runChecked(this.exec, "say", args, "say failed");
   }
 }

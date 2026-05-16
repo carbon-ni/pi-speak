@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { HuggingFaceClient, getHuggingFacePiperVoiceUrls } from "./hugging-face.js";
+import { HuggingFaceClient, getPiperVoiceAssetUrls } from "./hugging-face.js";
 
-describe("getHuggingFacePiperVoiceUrls", () => {
+describe("getPiperVoiceAssetUrls", () => {
   it("builds Piper voice asset URLs from a voice id", () => {
-    expect(getHuggingFacePiperVoiceUrls("ar_JO-kareem-low")).toEqual({
+    expect(getPiperVoiceAssetUrls("ar_JO-kareem-low")).toEqual({
       modelUrl:
         "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/ar/ar_JO/kareem/low/ar_JO-kareem-low.onnx",
       configUrl:
@@ -12,7 +12,7 @@ describe("getHuggingFacePiperVoiceUrls", () => {
   });
 
   it("fails for invalid Piper voice ids", () => {
-    expect(() => getHuggingFacePiperVoiceUrls("invalid")).toThrow("Invalid piper voice id");
+    expect(() => getPiperVoiceAssetUrls("invalid")).toThrow("Invalid piper voice id");
   });
 });
 

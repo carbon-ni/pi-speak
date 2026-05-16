@@ -2,34 +2,19 @@ import { mkdtemp, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
-import {
-  getHuggingFacePiperVoiceUrls,
-  installPiperVoiceFromHuggingFace,
-  listAvailablePiperVoicesFromHuggingFace
-} from "./piper-voice-installer.js";
+import { installPiperVoice, listAvailablePiperVoices } from "./piper-voice-installer.js";
 
-describe("getHuggingFacePiperVoiceUrls", () => {
-  it("builds huggingface URLs from piper voice id", () => {
-    expect(getHuggingFacePiperVoiceUrls("ar_JO-kareem-low")).toEqual({
-      modelUrl:
-        "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/ar/ar_JO/kareem/low/ar_JO-kareem-low.onnx",
-      configUrl:
-        "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/ar/ar_JO/kareem/low/ar_JO-kareem-low.onnx.json"
-    });
-  });
-});
-
-describe("listAvailablePiperVoicesFromHuggingFace", () => {
+describe("listAvailablePiperVoices", () => {
   it("returns sorted voice ids from HuggingFace voices.json", async () => {
     const fetchMock = vi.fn(async () => {
       return new Response(JSON.stringify({ b: { key: "b" }, a: { key: "a" } }), { status: 200 });
     });
 
-    await expect(listAvailablePiperVoicesFromHuggingFace({ fetch: fetchMock as any })).resolves.toEqual(["a", "b"]);
+    await expect(listAvailablePiperVoices({ fetch: fetchMock as any })).resolves.toEqual(["a", "b"]);
   });
 });
 
-describe("installPiperVoiceFromHuggingFace", () => {
+describe("installPiperVoice", () => {
   it("downloads model + config into cache dir", async () => {
     const cacheDir = await mkdtemp(join(tmpdir(), "piper-voice-cache-"));
 
@@ -38,7 +23,7 @@ describe("installPiperVoiceFromHuggingFace", () => {
       return new Response(body, { status: 200 });
     });
 
-    await installPiperVoiceFromHuggingFace({ voiceId: "ar_JO-kareem-low", cacheDir, fetch: fetchMock as any });
+    await installPiperVoice({ voiceId: "ar_JO-kareem-low", cacheDir, fetch: fetchMock as any });
 
     const model = await readFile(join(cacheDir, "ar_JO-kareem-low", "model.onnx"), "utf8");
     const config = await readFile(join(cacheDir, "ar_JO-kareem-low", "model.onnx.json"), "utf8");
@@ -50,7 +35,7 @@ describe("installPiperVoiceFromHuggingFace", () => {
 
   it("fails when voice id does not match <locale>-<name>-<quality>", async () => {
     await expect(
-      installPiperVoiceFromHuggingFace({ voiceId: "invalid", cacheDir: "/tmp/any", fetch: vi.fn() as any })
+      installPiperVoice({ voiceId: "invalid", cacheDir: "/tmp/any", fetch: vi.fn() as any })
     ).rejects.toThrow("Invalid piper voice id");
   });
 });

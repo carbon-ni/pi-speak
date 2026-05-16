@@ -1,10 +1,8 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { HuggingFaceClient, getHuggingFacePiperVoiceUrls } from "../api/hugging-face.js";
+import { HuggingFaceClient } from "../api/hugging-face.js";
 
-export { getHuggingFacePiperVoiceUrls };
-
-export async function listAvailablePiperVoicesFromHuggingFace(options?: {
+export async function listAvailablePiperVoices(options?: {
   fetch?: typeof fetch;
   client?: HuggingFaceClient;
 }): Promise<string[]> {
@@ -12,7 +10,7 @@ export async function listAvailablePiperVoicesFromHuggingFace(options?: {
   return client.listPiperVoiceIds();
 }
 
-export async function installPiperVoiceFromHuggingFace(options: {
+export async function installPiperVoice(options: {
   voiceId: string;
   cacheDir: string;
   fetch?: typeof fetch;

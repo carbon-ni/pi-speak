@@ -2,7 +2,7 @@
 import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
 import { initProjectSpeakSettings } from "../infrastructure/project-speak-settings.js";
-import { installPiperVoiceFromHuggingFace } from "../infrastructure/piper-voice-installer.js";
+import { installPiperVoice } from "../infrastructure/piper-voice-installer.js";
 import { uninstallPiperVoice } from "../infrastructure/piper-voice-uninstaller.js";
 import { createReadOutLoudProfile, listReadOutLoudProfiles, setReadOutLoudProfile } from "../infrastructure/profile-settings.js";
 import { panicStop } from "../infrastructure/panic-stop.js";
@@ -62,7 +62,7 @@ export async function runPiSpeak(
   const install =
     options?.install ??
     (async (voiceId: string) => {
-      return installPiperVoiceFromHuggingFace({ voiceId, cacheDir: defaultCacheDir() });
+      return installPiperVoice({ voiceId, cacheDir: defaultCacheDir() });
     });
 
   const uninstall =
@@ -75,7 +75,7 @@ export async function runPiSpeak(
     options?.listAvailable ??
     (async () => {
       const mod = await import("../infrastructure/piper-voice-installer.js");
-      return mod.listAvailablePiperVoicesFromHuggingFace({ fetch });
+      return mod.listAvailablePiperVoices({ fetch });
     });
 
   const listProfiles = options?.listProfiles ?? (async () => listReadOutLoudProfiles({ cwd }));

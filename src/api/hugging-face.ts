@@ -13,7 +13,7 @@ export type PiperVoiceAssets = {
   config: Uint8Array;
 };
 
-export function getHuggingFacePiperVoiceUrls(voiceId: string): PiperVoiceUrls {
+export function getPiperVoiceAssetUrls(voiceId: string): PiperVoiceUrls {
   // Piper voice ids are like: ar_JO-kareem-low
   // HuggingFace layout is: <lang>/<locale>/<name>/<quality>/<voiceId>.onnx
   const parts = voiceId.split("-");
@@ -53,7 +53,7 @@ export class HuggingFaceClient {
   }
 
   async downloadPiperVoice(voiceId: string): Promise<PiperVoiceAssets> {
-    const { modelUrl, configUrl } = getHuggingFacePiperVoiceUrls(voiceId);
+    const { modelUrl, configUrl } = getPiperVoiceAssetUrls(voiceId);
     const [model, config] = await Promise.all([this.downloadBytes(modelUrl), this.downloadBytes(configUrl)]);
     return { model, config };
   }

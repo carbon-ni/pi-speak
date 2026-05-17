@@ -50,9 +50,7 @@ Required for speech playback:
 - `afplay` — audio playback on macOS
 
 Required for voice management commands:
-- `bash` — runs `scripts/piper-voices.sh`
-- `curl` — downloads Piper voice files
-- `jq` — reads and filters `resources/piper-voices.json`
+- network access to Hugging Face `rhasspy/piper-voices`
 
 Optional for `speak selection` fallback:
 - `pbpaste` on macOS
@@ -137,8 +135,8 @@ npm test
 - `src/domain` — pure parsing, normalization, state
 - `src/application` — controller and ports
 - `src/infrastructure` — Pi adapters, config, scripts, process execution
-- `resources/piper-voices.json` — voice catalog
-- `scripts/piper-voices.sh` — voice list/install script
+- `resources/piper-voices.json` — legacy small voice catalog fixture
+- `scripts/piper-voices.sh` — legacy voice list/install script
 
 ## Notes
 
@@ -152,5 +150,6 @@ npm test
 - `speak selection` first tries Pi/runtime selection hooks, then falls back to clipboard text
 - playback stops on session switch
 - playback stops on session shutdown
-- default mode is local-only
+- default speech mode is local-only
+- voice listing/install downloads Piper files from Hugging Face
 - no remote TTS provider fallback is implemented

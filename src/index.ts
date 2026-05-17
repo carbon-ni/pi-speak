@@ -1,24 +1,22 @@
+import { readdir } from "node:fs/promises";
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { parseReadAloudCommand } from "./domain/command-parser.js";
 import { getSpeakCommandCompletions } from "./domain/speak-command-completions.js";
 import { ReadOutLoudController } from "./application/read-out-loud-controller.js";
 import { createAutoSpeakState } from "./application/auto-speak.js";
 import { createAutoSpeakQueue } from "./application/auto-speak-queue.js";
-import { PiperVoiceCatalogService } from "./application/piper-voice-catalog-service.js";
 import { PiContentResolver } from "./infrastructure/pi-content-resolver.js";
 import { createPiSelectionProvider } from "./infrastructure/pi-selection-provider.js";
 import { PiStatusPresenter } from "./infrastructure/pi-status-presenter.js";
 import { toReadableAssistantContent } from "./infrastructure/pi-message-content.js";
-import { PiExecScriptRunner } from "./infrastructure/script-runner.js";
 import { BundledPiperSpeechEngine } from "./infrastructure/piper-speech-engine.js";
 import { loadReadOutLoudConfig } from "./infrastructure/read-out-loud-config.js";
 import { initProjectSpeakSettings } from "./infrastructure/project-speak-settings.js";
-import voiceCatalog from "../resources/piper-voices.json" with { type: "json" };
+import { installPiperVoice, listAvailablePiperVoices } from "./infrastructure/piper-voice-installer.js";
 
 export default function (pi: ExtensionAPI) {
   const api = pi as any;
   let controller: ReadOutLoudController | null = null;
-  let piperCatalog: PiperVoiceCatalogService | null = null;
   let speechConfigPromise: Promise<{
     piper: { modelPath: string; configPath: string; speakingRate: number };
     speech: { pathMode: "ignore" | "read"; autoSpeak: boolean };
@@ -28,12 +26,21 @@ export default function (pi: ExtensionAPI) {
   let drainingAutoSpeakQueue = false;
   let speakingEnabled = true;
 
-  const ensurePiperCatalog = (): PiperVoiceCatalogService => {
-    if (piperCatalog) return piperCatalog;
-    piperCatalog = new PiperVoiceCatalogService(
-      new PiExecScriptRunner((command, args) => pi.exec(command, args))
-    );
-    return piperCatalog;
+  const defaultCacheDir = (): string => {
+    const home = process.env.HOME;
+    if (!home) throw new Error("HOME is not set");
+    return `${home}/.pi/agent/cache/pi-speak/piper/voices`;
+  };
+
+  const listInstalledVoiceIds = async (): Promise<string[]> => {
+    try {
+      const entries = await readdir(defaultCacheDir(), { withFileTypes: true });
+      return entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code === "ENOENT") return [];
+      throw error;
+    }
   };
 
   const ensureSpeechConfig = () => {
@@ -83,25 +90,22 @@ export default function (pi: ExtensionAPI) {
 
   api.registerCommand("speak", {
     description: "Speak latest assistant message aloud, or a range like '-2 0' / 'last 3'",
-    getArgumentCompletions: (prefix: string) =>
-      getSpeakCommandCompletions(prefix, voiceCatalog.voices.map((voice) => voice.id)),
+    getArgumentCompletions: (prefix: string) => getSpeakCommandCompletions(prefix, []),
     handler: async (args: string | undefined, ctx: any) => {
       const trimmed = args?.trim() ?? "";
       if (trimmed === "voices") {
-        const voices = await ensurePiperCatalog().listCatalog();
-        const summary = voices.map((voice) => `${voice.id} (${voice.lang})`).join("\n");
-        ctx.ui.notify(summary || "No Piper voices found", "info");
+        const voiceIds = await listAvailablePiperVoices();
+        ctx.ui.notify(voiceIds.join("\n") || "No Piper voices found", "info");
         return;
       }
       if (trimmed === "voices installed") {
-        const voices = await ensurePiperCatalog().listInstalled();
-        const summary = voices.map((voice) => `${voice.id} (${voice.lang})`).join("\n");
-        ctx.ui.notify(summary || "No Piper voices installed", "info");
+        const voiceIds = await listInstalledVoiceIds();
+        ctx.ui.notify(voiceIds.join("\n") || "No Piper voices installed", "info");
         return;
       }
       if (trimmed.startsWith("voices install ")) {
         const voiceId = trimmed.slice("voices install ".length).trim();
-        const result = await ensurePiperCatalog().install(voiceId);
+        const result = await installPiperVoice({ voiceId, cacheDir: defaultCacheDir() });
         ctx.ui.notify(`Installed ${result.voiceId}`, "info");
         return;
       }

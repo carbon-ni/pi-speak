@@ -10,7 +10,9 @@ export const normalizeForSpeech = (
   const withoutPaths = pathMode === "ignore" ? stripPaths(text) : text;
 
   return withoutPaths
+    .replace(/```text\s*\n([\s\S]*?)```/gi, "$1")
     .replace(/```[\s\S]*?```/g, " ")
+    .replace(/^\s{0,3}#{1,6}\s+/gm, "")
     .replace(/`([^`]+)`/g, "$1")
     .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
     .replace(/(\*\*|__)(.*?)\1/g, "$2")
